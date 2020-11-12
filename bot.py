@@ -1,13 +1,16 @@
 import discord
 import os
 from dotenv import load_dotenv
+from discord.ext import commands
+from discord.utils import find
 
 load_dotenv()
 
-DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
+print(discord.__version__)
 
-bot = discord.Client(command_prefix = '#')
+DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 discord = discord
+bot = commands.Bot(command_prefix="#")
 
 @bot.event
 async def on_ready():
@@ -26,5 +29,12 @@ async def on_message(message):
 		return
 	if message.content.startswith("hello"): 
 		await message.channel.send("Did you need something?")
+
+
+@bot.event
+async def on_guild_join(guild):
+    general = find(lambda x: x.name == 'general',  guild.text_channels)
+    if general and general.permissions_for(guild.me).send_messages:
+        await general.send('Hello {}!'.format(guild.name))
 
 bot.run(DISCORD_TOKEN)
